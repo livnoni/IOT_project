@@ -32,6 +32,9 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     private String LOG_TAG = "VoiceRecognitionActivity";
     boolean listening = false;
 
+
+    //test git
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
