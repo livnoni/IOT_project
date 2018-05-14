@@ -1,0 +1,98 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Sentiment Analysis Application</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+        }
+        html {
+            display: table;
+            margin: auto;
+        }
+        body {
+            display: table-cell;
+            vertical-align: middle;
+        }
+        .bodyDiv{
+            margin-right: 300PX;
+            float:left;
+        }
+        .loader {
+            opacity: 0;
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid blue;
+            border-right: 16px solid green;
+            border-bottom: 16px solid red;
+            border-left: 16px solid pink;
+            width: 120px;
+            height: 120px;
+            -webkit-animation: spin 2s linear infinite;
+            animation: spin 2s linear infinite;
+            float:left;
+        }
+        @-webkit-keyframes spin {
+            0% { -webkit-transform: rotate(0deg); }
+            100% { -webkit-transform: rotate(360deg); }
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+
+</head>
+
+<div>
+    <p align="right">IOT course - Final Project</p>
+    <p align="right" > Select Accuracy:
+        <select align="right" id="accuracy">
+            <option value=0>low</option>
+            <option value=1>middle</option>
+            <option value=2>high</option>
+            <option value=3>super high</option>
+        </select>
+    </p>
+
+    <P>
+        Welcome to the <b>Elderly Smart home</b> <br>
+        Here you can see all the data that the android send to the server on real time
+    </P>
+
+</div>
+
+
+
+<textarea id="tweets" rows="25" cols="150" placeholder="Here the speech recognizer are going to be seen..."></textarea> <br><br>
+
+
+
+<script>
+    var num =0;
+    setInterval(function () {
+            $.get("http://localhost:3000/getText", function (data) {
+                console.log("Data: " + data);
+                var accuracy = $("#accuracy").val();
+                if(data!=""){
+                    num ++;
+                    var numOfOptions = data.split('\n').length;
+                    var counter =0;
+                    while(counter <= numOfOptions && counter <= accuracy){
+                        $("#tweets").val($("#tweets").val() + num+") "+data.split('\n')[counter]+ "\n");
+                        counter++;
+                        autoScollDown();
+                    }
+                }
+            });
+    }, 1000);
+
+    function autoScollDown(){
+        document.getElementById("tweets").scrollTop = document.getElementById("tweets").scrollHeight;
+    }
+
+</script>
+
+</body>
+</html>
