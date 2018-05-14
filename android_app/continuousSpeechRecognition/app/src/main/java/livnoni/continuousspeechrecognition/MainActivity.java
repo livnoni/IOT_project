@@ -1,6 +1,10 @@
 package livnoni.continuousspeechrecognition;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.app.DownloadManager;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.speech.RecognitionListener;
@@ -13,27 +17,38 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements RecognitionListener {
 
     private static final int REQUEST_RECORD_PERMISSION = 100;
     private int maxLinesInput = 10;
     private TextView returnedText;
+    private EditText nodeServerIp;
     private ToggleButton toggleButton;
     private ProgressBar progressBar;
     private SpeechRecognizer speech = null;
     private Intent recognizerIntent;
     private String LOG_TAG = "VoiceRecognitionActivity";
     boolean listening = false;
+    String serverIp;
+    RequestQueue queue;
 
-
-    //test git
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,29 +58,94 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         returnedText = (TextView) findViewById(R.id.textView1);
         progressBar = (ProgressBar) findViewById(R.id.progressBar1);
         toggleButton = (ToggleButton) findViewById(R.id.toggleButton1);
+        nodeServerIp = (EditText) findViewById(R.id.nodeServerIp);
+        queue = Volley.newRequestQueue(this);
+
 
         toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
             @Override
             public void onCheckedChanged(CompoundButton buttonView,
                                          boolean isChecked) {
-                if (isChecked) {
-                    listening = true;
-                    start();
-                    progressBar.setVisibility(View.VISIBLE);
-                    progressBar.setIndeterminate(true);
-                    ActivityCompat.requestPermissions
-                            (MainActivity.this,
-                                    new String[]{Manifest.permission.RECORD_AUDIO},
-                                    REQUEST_RECORD_PERMISSION);
-                } else {
-                    listening = false;
-                    progressBar.setIndeterminate(false);
-                    progressBar.setVisibility(View.INVISIBLE);
-                    turnOf();
+                serverIp = nodeServerIp.getText().toString();
+                Log.d("serverIp", "the text is:"+serverIp);
+                if(!serverIp.equals("")) {
+                    if (isChecked) {
+                        listening = true;
+                        start();
+                        progressBar.setVisibility(View.VISIBLE);
+                        progressBar.setIndeterminate(true);
+                        ActivityCompat.requestPermissions
+                                (MainActivity.this,
+                                        new String[]{Manifest.permission.RECORD_AUDIO},
+                                        REQUEST_RECORD_PERMISSION);
+
+                    } else {
+                        listening = false;
+                        progressBar.setIndeterminate(false);
+                        progressBar.setVisibility(View.INVISIBLE);
+                        turnOf();
+                    }
+                }
+                else{
+                    if(isChecked){
+                        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                        alertDialog.setTitle("No server ip address");
+                        alertDialog.setMessage("Please provide your node server ip");
+                        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                        alertDialog.show();
+                        toggleButton.setChecked(false);
+                    }else{
+                        //this for case user delete the node ip address while the app already works..
+                        //for this case we just close the speech recognizers
+                        listening = false;
+                        progressBar.setIndeterminate(false);
+                        progressBar.setVisibility(View.INVISIBLE);
+                        turnOf();
+                    }
                 }
             }
         });
+        RequestQueue queue = Volley.newRequestQueue(this);
+    }
+
+
+    public void sendDataToServer(Context context, final String text){
+        String url = "http://192.168.1.104:3000/data";
+        StringRequest postRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>()
+                {
+                    @Override
+                    public void onResponse(String response) {
+                        // response
+                        Log.d("Response", response);
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // error
+                        Log.d("Error.Response", "no response from server!");
+                        Toast.makeText(MainActivity.this, "server error response! check if your node server is up...", Toast
+                                .LENGTH_LONG).show();
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams()
+            {
+                Map<String, String>  params = new HashMap<String, String>();
+                params.put("text", text);
+                return params;
+            }
+        };
+        queue.add(postRequest);
     }
 
     public void start(){
@@ -126,6 +206,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     public void onReadyForSpeech(Bundle bundle) {
         Log.i(LOG_TAG, "onReadyForSpeech");
 
+
     }
 
     @Override
@@ -153,14 +234,23 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     @Override
     public void onEndOfSpeech() {
         Log.i(LOG_TAG, "onEndOfSpeech");
+
     }
+
 
     @Override
     public void onError(int errorCode) {
         String errorMessage = getErrorText(errorCode);
         Log.d(LOG_TAG, "FAILED " + errorMessage);
         returnedText.setText(errorMessage);
-        speech.startListening(recognizerIntent);
+        new android.os.Handler().postDelayed(
+                new Runnable() {
+                    public void run() {
+                        Log.i("tag", "This'll run 500 milliseconds later");
+                        speech.startListening(recognizerIntent);
+                    }
+                },
+                500);
 
     }
 
@@ -173,6 +263,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         for (String result : matches)
             text += result + "\n";
         Log.i(LOG_TAG, "onResults="+text);
+        sendDataToServer(this,text);
         returnedText.setText(text);
         speech.startListening(recognizerIntent);
 
@@ -219,7 +310,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                 break;
             case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
                 message = "RecognitionService busy";
-                turnOf();
+//                turnOf();
                 break;
             case SpeechRecognizer.ERROR_SERVER:
                 message = "error from server";
