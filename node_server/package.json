@@ -1,0 +1,15 @@
+{
+  "name": "node_server",
+  "version": "1.0.0",
+  "description": "node server for getting speach orders",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "yehuda livonni & or evron",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.3"
+  }
+}
