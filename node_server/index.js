@@ -25,11 +25,93 @@ app.post('/data', function(req, res) {
     textData += text;
     console.log("got post request: "+text);
     res.send("server got: "+ text);
+    analyzeText(text);
 });
 
 app.get('/getText', function(req, res) {
     res.send(textData);
     textData = "";
 });
+
+var webdriver = require('selenium-webdriver'),
+    until = webdriver.until,
+    By = webdriver.By;
+
+var driver;
+
+function analyzeText(text){
+    text = text.toLowerCase();
+    if(text.includes("google") && text.includes("open")){
+        console.log("analyzeText found google! start automation...");
+        driver = new webdriver.Builder()
+            .forBrowser("chrome")
+            .build();
+
+        driver.get("https://www.google.com/");
+
+    }
+
+    if(text.includes("youtube") && text.includes("open")){
+        console.log("analyzeText found youtube! start automation...");
+        driver = new webdriver.Builder()
+            .forBrowser("chrome")
+            .build();
+
+        driver.get("https://www.youtube.com/");
+
+    }
+
+    if(text.includes("weather")){
+        console.log("analyzeText found weather! start automation...");
+        driver = new webdriver.Builder()
+            .forBrowser("chrome")
+            .build();
+
+        driver.get("https://weather.ynet.co.il/");
+
+    }
+
+    if(text.includes("taxi") || text.includes("uber")){
+        console.log("analyzeText found taxi || uber! start automation...");
+        driver = new webdriver.Builder()
+            .forBrowser("chrome")
+            .build();
+
+        driver.get("https://m.uber.com/looking/search/pickup");
+
+    }
+
+    if(text.includes("news") || text.includes("open")){
+        console.log("analyzeText found news! start automation...");
+        driver = new webdriver.Builder()
+            .forBrowser("chrome")
+            .build();
+
+        driver.get("http://rotter.net/scoopscache.html");
+
+    }
+
+    if(text.includes("scroll") || text.includes("down")){
+        console.log("analyzeText found scroll down! start automation...");
+        if(driver){
+            driver.executeScript("window.scrollBy(0,300)");
+        }
+    }
+
+    if(text.includes("scroll") || text.includes("up")){
+        console.log("analyzeText found scroll up! start automation...");
+        if(driver){
+            driver.executeScript("window.scrollBy(0,-300)");
+        }
+    }
+
+    if(text.includes("close") || text.includes("shut down") || text.includes("shutdown")){
+        console.log("analyzeText found close || shut down! start automation...");
+        if(driver){
+            driver.close();
+        }
+
+    }
+}
 
 
