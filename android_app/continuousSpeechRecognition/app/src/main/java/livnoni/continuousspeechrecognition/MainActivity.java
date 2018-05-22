@@ -116,7 +116,9 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
 
     public void sendDataToServer(Context context, final String text){
-        String url = "http://192.168.1.104:3000/data";
+
+//        String url = "http://192.168.1.104:3000/data";
+        String url = "http://"+nodeServerIp.getText().toString()+":3000/data";
         StringRequest postRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>()
                 {
