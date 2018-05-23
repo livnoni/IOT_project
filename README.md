@@ -1,15 +1,15 @@
 # IOT_project
 
-This is our project in the IT course at Ariel University in the Department of Computer Science
+This is our project in the IOT course at Ariel University in the Department of Computer Science
 
 ##### GENERAL BACKGROUND / CONTEXT
 Elderly people need a lot of daily assistance.
-The solution today is a personal (human) individual assistant.
+The solution nowadays is a personal (human) individual assistant.
 We live in an era in which life expectancy rises and so does technology.
-Why should not we use this technology to help older people?
-Why should not we use smart sensors and advanced software to make life easier for the elderly?
+Why don't we use this technology to help older people?
+Why don't we use smart sensors and advanced software to make life easier for the elderly?
 
-##### The problem that we want to solve:
+##### The problem:
 We aim to solve daily problems for old people through voice commands.
 For example: operating the TV, operating air conditioner, using the Internet for a wide range of services,
 etc...
@@ -17,24 +17,24 @@ etc...
 #####  OUR SOLUTION
 Our solution is a smart home system.
 With Android devices, voice commands will be given by the users.
-The commands will transfer to NodeJS server in the localhost of your home network.
+The commands will be transfer to NodeJS server in the local network.
 The node server will transfer tasks to the smart agents, such as a IR blaster(Orvibo) that
 communicate with IR devices, a selenium server that will perform a variety of automated actions
-on the web and more.
+on the web and more...
 It is important to emphasize that the users will install an Android application that continuously
 listens to voice commands around the house (without any user interaction).
-In addition the voice command will be saved in the server for further learning and automations
+In addition the voice command will be saved in the server for further learning and automation actions
 
-##### The project contains two main folders:
+##### The project contains two main components:
  - Android application
  - Node server
 
-The Android application makes continuous Speech Recognition in the bacground, The Android application works at offline real time converting sound to text using google RecognitionListener class.
-In addition the application send post request to the desire ip with the content of the speach that have been converted into text.
+The Android application works offline and makes continuous Speech Recognition in the background, real time converting sound to text using google RecognitionListener library.
+In addition the application send HTTP requests to the server with the content of the speech that have been converted into text.
 
-The node server gets the data from the Android application, It ave the data and it analyze the data.
+The node server gets the data from the Android application to analyze the data.
 
-If the server 'understand' the order then it makes te orders.
+If the server 'understand' the command, it executes it.
 
 
 
@@ -48,26 +48,26 @@ The REST API to the example app is described below.
 
 `GET /`
 
-    curl -i -H 'Accept: application/json' http://localhost:PORT
+    curl -i -H 'Accept: application/json' http://localhost:<PORT>
 
 ### Response
     Open the html page.
   
 `GET /getText`
 
-    curl -i -H 'Accept: application/json' http://localhost:PORT/getText
+    curl -i -H 'Accept: application/json' http://localhost:<PORT>/getText
 
 ### Response
-    Return the last chunked of text that didnt sent to the client.  
+    Return the last chunk of text that didn't sent to the client.
 `POST /data`
 
 
-    curl -d "text=THIS_IS_TEST_DATA_TO_SEND_THE_SERVER" -X POST http://localhost:3000/data
+    curl -d "text=THIS_IS_TEST_DATA_TO_SEND_THE_SERVER" -X POST http://localhost:<PORT>/<data>
 
 ### Response
-    The text saved in the local memory of the server
-    The text presented in the html to the user
-    the text start to be analyzed by analyzeText function
+    The text saved in the server local storage
+    The text presented in the html page to the user
+    the server analyzed by analyzeText function
     
     
   

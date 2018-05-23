@@ -7,18 +7,22 @@
         html, body {
             height: 100%;
         }
+
         html {
             display: table;
             margin: auto;
         }
+
         body {
             display: table-cell;
             vertical-align: middle;
         }
-        .bodyDiv{
+
+        .bodyDiv {
             margin-right: 300PX;
-            float:left;
+            float: left;
         }
+
         .loader {
             opacity: 0;
             border: 16px solid #f3f3f3;
@@ -31,15 +35,25 @@
             height: 120px;
             -webkit-animation: spin 2s linear infinite;
             animation: spin 2s linear infinite;
-            float:left;
+            float: left;
         }
+
         @-webkit-keyframes spin {
-            0% { -webkit-transform: rotate(0deg); }
-            100% { -webkit-transform: rotate(360deg); }
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
         }
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
         }
     </style>
 
@@ -47,7 +61,7 @@
 
 <div>
     <p align="right">IOT course - Final Project</p>
-    <p align="right" > Select Accuracy:
+    <p align="right"> Select Accuracy:
         <select align="right" id="accuracy">
             <option value=0>low</option>
             <option value=1>middle</option>
@@ -64,31 +78,34 @@
 </div>
 
 
+<textarea id="tweets" rows="25" cols="150" placeholder="Here the speech recognizer are going to be seen..."></textarea>
+<br><br>
 
-<textarea id="tweets" rows="25" cols="150" placeholder="Here the speech recognizer are going to be seen..."></textarea> <br><br>
-
-
-
+<label for="ip">Server IP</label>
+<input id="ip" placeholder="localhost">
 <script>
-    var num =0;
+
     setInterval(function () {
-            $.get("http://localhost:3000/getText", function (data) {
-                console.log("Data: " + data);
-                var accuracy = $("#accuracy").val();
-                if(data!=""){
-                    num ++;
-                    var numOfOptions = data.split('\n').length;
-                    var counter =0;
-                    while(counter <= numOfOptions && counter <= accuracy){
-                        $("#tweets").val($("#tweets").val() + num+") "+data.split('\n')[counter]+ "\n");
-                        counter++;
-                        autoScollDown();
-                    }
+        var num = 0;
+        var ip = document.getElementById('ip').value;
+        if (ip == '') ip = 'localhost';
+        $.get(`http://${ip}:3000/getText`, function (data) {
+            console.log("Data: " + data);
+            var accuracy = $("#accuracy").val();
+            if (data != "") {
+                num++;
+                var numOfOptions = data.split('\n').length;
+                var counter = 0;
+                while (counter <= numOfOptions && counter <= accuracy) {
+                    $("#tweets").val($("#tweets").val() + num + ") " + data.split('\n')[counter] + "\n");
+                    counter++;
+                    autoScollDown();
                 }
-            });
+            }
+        });
     }, 1000);
 
-    function autoScollDown(){
+    function autoScollDown() {
         document.getElementById("tweets").scrollTop = document.getElementById("tweets").scrollHeight;
     }
 
