@@ -82,14 +82,12 @@
 <br><br>
 
 <label for="ip">Server IP</label>
-<input id="ip" placeholder="localhost">
+<input id="ip" placeholder="localhost" disabled style="color: red">
 <script>
-
+    document.getElementById('ip').value = document.location.host.split(':')[0];
     setInterval(function () {
         var num = 0;
-        var ip = document.getElementById('ip').value;
-        if (ip == '') ip = 'localhost';
-        $.get(`http://${ip}:3000/getText`, function (data) {
+        $.get(`http://${document.location.host}/getText`, function (data) {
             console.log("Data: " + data);
             var accuracy = $("#accuracy").val();
             if (data != "") {
