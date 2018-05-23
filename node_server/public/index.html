@@ -85,8 +85,8 @@
 <input id="ip" placeholder="localhost" disabled style="color: red">
 <script>
     document.getElementById('ip').value = document.location.host.split(':')[0];
+    var num =0;
     setInterval(function () {
-        var num = 0;
         $.get(`http://${document.location.host}/getText`, function (data) {
             console.log("Data: " + data);
             var accuracy = $("#accuracy").val();
