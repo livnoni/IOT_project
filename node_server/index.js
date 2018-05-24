@@ -39,6 +39,18 @@ var webdriver = require('selenium-webdriver'),
 
 var driver;
 
+var five = require('johnny-five');
+
+var board = new five.Board();
+var led;
+
+board.on('ready', function() {
+    console.log("Arduino connected!");
+    led = new five.Led(13);
+    led.off();
+    // led.blink(500);
+});
+
 function analyzeText(text) {
     text = text.toLowerCase();
     if (text.includes("google") && text.includes("open")) {
@@ -61,12 +73,12 @@ function analyzeText(text) {
         console.log("analyzeText found news! start automation...");
         driver = new webdriver.Builder().forBrowser("chrome").build();
         driver.get("http://rotter.net/scoopscache.html");
-    } else if (text.includes("scroll") || text.includes("down")) {
+    } else if (text.includes("scroll down")) {
         console.log("analyzeText found scroll down! start automation...");
         if (driver) {
             driver.executeScript("window.scrollBy(0,300)");
         }
-    } else if (text.includes("scroll") || text.includes("up")) {
+    } else if (text.includes("scroll up")) {
         console.log("analyzeText found scroll up! start automation...");
         if (driver) {
             driver.executeScript("window.scrollBy(0,-300)");
@@ -76,7 +88,19 @@ function analyzeText(text) {
         if (driver) {
             driver.close();
         }
+    } else if (text.includes("turn on") && (text.includes("light") || text.includes("led"))) {
+        console.log("analyzeText found turn on light start automation...");
+        if (board) {
+            led.on();
+        }
+    } else if (text.includes("turn off") && (text.includes("light") || text.includes("led"))) {
+        console.log("analyzeText found turn of light start automation...");
+        if (board) {
+            led.off();
+        }
     }
+
+
 }
 
 
