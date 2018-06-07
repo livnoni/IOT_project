@@ -77,8 +77,14 @@
 
 </div>
 
-
 <textarea id="tweets" rows="25" cols="150" placeholder="Here the speech recognizer are going to be seen..."></textarea>
+<br><br>
+
+<div>
+    <button onclick="ledOn()">Led On</button>
+    <button onclick="ledOff()">Led Off</button>
+</div>
+
 <br><br>
 
 <label for="ip">Server IP</label>
@@ -105,6 +111,17 @@
 
     function autoScollDown() {
         document.getElementById("tweets").scrollTop = document.getElementById("tweets").scrollHeight;
+    }
+
+    function ledOn(){
+        $.get(`http://${document.location.host}/ledOn`, function (data) {
+            console.log("ledOn data: " + data);
+        });
+    }
+    function ledOff(){
+        $.get(`http://${document.location.host}/ledOff`, function (data) {
+            console.log("ledOff data: " + data);
+        });
     }
 
 </script>
