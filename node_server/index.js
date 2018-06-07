@@ -16,6 +16,18 @@ var server = app.listen(config.port, function () {
     console.log("app running on port:", server.address().port);
 });
 
+var five = require('johnny-five');
+
+var board = new five.Board();
+var led;
+
+board.on('ready', function() {
+    console.log("Arduino connected!");
+    led = new five.Led(13);
+    led.off();
+    // led.blink(500);
+});
+
 app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname + '/public/index.html'));
 });
@@ -33,23 +45,33 @@ app.get('/getText', function (req, res) {
     textData = "";
 });
 
+app.get('/ledOn', function (req, res) {
+    res.send(textData);
+    textData = "";
+    if(turnOnLed()){
+        console.log("set the led on");
+        textData = "turning on the led..."
+    }else{
+        console.error("can't set the led on!");
+    }
+});
+
+app.get('/ledOff', function (req, res) {
+    res.send(textData);
+    textData = "";
+    if(turnOffLed()){
+        console.log("set the led off");
+        textData = "turning off the led."
+    }else{
+        console.error("can't set the led off!");
+    }
+});
+
 var webdriver = require('selenium-webdriver'),
     until = webdriver.until,
     By = webdriver.By;
 
 var driver;
-
-var five = require('johnny-five');
-
-var board = new five.Board();
-var led;
-
-board.on('ready', function() {
-    console.log("Arduino connected!");
-    led = new five.Led(13);
-    led.off();
-    // led.blink(500);
-});
 
 function analyzeText(text) {
     text = text.toLowerCase();
@@ -90,17 +112,27 @@ function analyzeText(text) {
         }
     } else if (text.includes("turn on") && (text.includes("light") || text.includes("led"))) {
         console.log("analyzeText found turn on light start automation...");
-        if (board) {
-            led.on();
-        }
+        turnOnLed();
     } else if (text.includes("turn off") && (text.includes("light") || text.includes("led"))) {
         console.log("analyzeText found turn of light start automation...");
-        if (board) {
-            led.off();
-        }
+        turnOffLed();
     }
+}
 
+function turnOnLed(){
+    if (board) {
+        led.on();
+        return true;
+    }
+    return false;
+}
 
+function turnOffLed(){
+    if (board) {
+        led.off();
+        return true;
+    }
+    return false;
 }
 
 
