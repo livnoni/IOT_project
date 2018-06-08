@@ -85,6 +85,10 @@
     <button onclick="ledOff()">Led Off</button>
 </div>
 
+<div>
+    <button onclick="sayDistance()">What's the distance ?</button>
+</div>
+
 <br><br>
 
 
@@ -121,7 +125,7 @@
 
             }
         });
-    }, 200);
+    }, 100);
 
     function autoScollDown() {
         document.getElementById("tweets").scrollTop = document.getElementById("tweets").scrollHeight;
@@ -135,6 +139,11 @@
     function ledOff(){
         $.get(`http://${document.location.host}/ledOff`, function (data) {
             console.log("ledOff data: " + data);
+        });
+    }
+    function sayDistance(){
+        $.get(`http://${document.location.host}/sayDistance`, function (data) {
+            console.log("sayDistance data: " + data);
         });
     }
 

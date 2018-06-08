@@ -3,6 +3,8 @@ var request = require('request');
 var cors = require('cors');
 var bodyParser = require("body-parser");
 var path = require('path');
+var say = require('say')
+
 var textData;
 
 var config = require("./config.json");
@@ -21,6 +23,7 @@ var board = new five.Board();
 var controller = process.argv[2] || "GP2Y0A02YK0F";
 var led;
 var distance =0;
+var button;
 
 board.on('ready', function() {
     console.log("Arduino connected!");
@@ -39,11 +42,40 @@ board.on('ready', function() {
     });
 
 
+    // Create a new `button` hardware instance.
+    // This example allows the button module to
+    // create a completely default instance
+    button = new five.Button(2);
 
+    // Inject the `button` hardware into
+    // the Repl instance's context;
+    // allows direct command line access
+    board.repl.inject({
+        button: button
+    });
 
+    // Button Event API
+
+    // "down" the button is pressed
+    button.on("down", function() {
+        textData = "button have pressed";
+        console.log("down");
+    });
+
+    // "hold" the button is pressed for specified time.
+    //        defaults to 500ms (1/2 second)
+    //        set
+    button.on("hold", function() {
+        console.log("hold");
+    });
+
+    // "up" the button is released
+    button.on("up", function() {
+        console.log("up");
+    });
 });
 
-setInterval(()=>{console.log(`distance = ${distance} cm`);},1000);
+// setInterval(()=>{console.log(`distance = ${distance} cm`);},1000);
 
 
 
@@ -86,6 +118,12 @@ app.get('/ledOff', function (req, res) {
     }else{
         console.error("can't set the led off!");
     }
+});
+
+app.get('/sayDistance', function (req, res) {
+    console.log("got sayDistance from client...")
+    say.speak(`The distance is ${distance | 0} centimeters`);
+    res.send(`server say: The distance is ${distance | 0} centimeters`);
 });
 
 var webdriver = require('selenium-webdriver'),
