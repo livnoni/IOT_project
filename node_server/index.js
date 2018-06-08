@@ -17,16 +17,35 @@ var server = app.listen(config.port, function () {
 });
 
 var five = require('johnny-five');
-
 var board = new five.Board();
+var controller = process.argv[2] || "GP2Y0A02YK0F";
 var led;
+var distance =0;
 
 board.on('ready', function() {
     console.log("Arduino connected!");
     led = new five.Led(13);
     led.off();
     // led.blink(500);
+
+    var proximity = new five.Proximity({
+        controller: controller,
+        pin: "A0"
+    });
+
+    proximity.on("data", function() {
+        // console.log("cm: ", this.cm);
+        distance = this.cm;
+    });
+
+
+
+
 });
+
+setInterval(()=>{console.log(`distance = ${distance} cm`);},1000);
+
+
 
 app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname + '/public/index.html'));
@@ -41,7 +60,9 @@ app.post('/data', function (req, res) {
 });
 
 app.get('/getText', function (req, res) {
-    res.send(textData);
+    var objToSend = {textData: textData, distance: distance};
+    res.send(JSON.stringify(objToSend));
+    // res.send(textData);
     textData = "";
 });
 

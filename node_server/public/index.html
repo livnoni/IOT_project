@@ -87,27 +87,41 @@
 
 <br><br>
 
-<label for="ip">Server IP</label>
-<input id="ip" placeholder="localhost" disabled style="color: red">
+
+<div>
+    <label for="ip">Server IP</label>
+    <input id="ip" placeholder="localhost" disabled style="color: red">
+</div>
+
+<div>
+    <label for="distance">ir-distance sensor data</label>
+    <input id="distance" placeholder="wait to sensor data..." disabled style="color: red">
+</div>
+
 <script>
     document.getElementById('ip').value = document.location.host.split(':')[0];
     var num =0;
     setInterval(function () {
         $.get(`http://${document.location.host}/getText`, function (data) {
             console.log("Data: " + data);
+            var objFromServer = JSON.parse(data);
             var accuracy = $("#accuracy").val();
-            if (data != "") {
+            if (objFromServer.textData != "") {
                 num++;
-                var numOfOptions = data.split('\n').length;
+                var numOfOptions = objFromServer.textData.split('\n').length;
                 var counter = 0;
                 while (counter <= numOfOptions && counter <= accuracy) {
-                    $("#tweets").val($("#tweets").val() + num + ") " + data.split('\n')[counter] + "\n");
+                    $("#tweets").val($("#tweets").val() + num + ") " + objFromServer.textData.split('\n')[counter] + "\n");
                     counter++;
                     autoScollDown();
                 }
             }
+            if(objFromServer.distance){
+                document.getElementById('distance').value = objFromServer.distance;
+
+            }
         });
-    }, 1000);
+    }, 200);
 
     function autoScollDown() {
         document.getElementById("tweets").scrollTop = document.getElementById("tweets").scrollHeight;
