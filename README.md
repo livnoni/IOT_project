@@ -1,5 +1,7 @@
 # IOT_project
 
+![alt text](https://github.com/livnoni/IOT_project/blob/master/pics/sensor%20diagram.jpg)
+
 This is our project in the IOT course at Ariel University in the Department of Computer Science
 
 ##### GENERAL BACKGROUND / CONTEXT
