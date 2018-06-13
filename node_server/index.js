@@ -24,7 +24,7 @@ var five = require('johnny-five');
 var board = new five.Board();
 var controller = process.argv[2] || "GP2Y0A02YK0F";
 var led;
-var distance =0;
+var distance = 0;
 var button;
 
 var eventGenerator = function (time, data, extraData) {
@@ -100,6 +100,12 @@ board.on('ready', function() {
     // });
 });
 
+
+setInterval(()=>{
+    if(distance != 0){
+        writeToDB(eventGenerator(new Date,distance + " cm", "regular command"), "distance");
+    }
+},1000 * 60);
 
 app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname + '/public/index.html'));
